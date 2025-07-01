@@ -2,6 +2,7 @@ import time
 from multiprocessing import Queue
 from typing import Any, Optional
 import subprocess
+# import Quartz # Removed as it's macOS-specific and no longer used
 
 import pyautogui
 from utils.screen import Screen
@@ -18,28 +19,53 @@ class Interpreter:
         
         # Check if we have accessibility permissions
         self._check_accessibility_permissions()
-        
-        # Mac OS specific key mappings
+
+        # OS specific key mappings
         self.key_mappings = {
-            'command': ['command'],
-            'option': ['alt'],
+            'command': ['command'],  # macOS
+            'option': ['alt'],  # macOS
             'control': ['ctrl'],
             'return': ['return'],
-            'enter': ['return'],
+            'enter': ['return'], # Alias for return
             'space': ['space'],
-            'esc': ['escape']
+            'esc': ['escape'],
+            'win': ['win'],  # Windows
+            'apps': ['apps']  # Windows context menu key
         }
-        
+
     def _check_accessibility_permissions(self):
-        """Check if the app has accessibility permissions."""
-        try:
-            # Try a simple mouse movement to test permissions
-            current_pos = pyautogui.position()
-            pyautogui.moveRel(0, 0)
-            pyautogui.moveTo(*current_pos)
-        except Exception as e:
-            self.status_queue.put("WARNING: Please grant accessibility permissions in System Preferences > Security & Privacy > Privacy > Accessibility")
-            print("WARNING: Accessibility permissions needed")
+        """Check if the app has necessary permissions or inform the user."""
+        import platform
+        os_name = platform.system().lower()
+
+        if os_name == "darwin":  # macOS
+            try:
+                # Try a simple mouse movement to test permissions
+                current_pos = pyautogui.position()
+                pyautogui.moveRel(0, 0) # This can fail if permissions are not granted
+                pyautogui.moveTo(*current_pos)
+            except Exception as e:
+                # More specific error message for macOS
+                error_message = (
+                    "WARNING: macOS Accessibility Permissions Needed. \n"
+                    "Please grant access in: \n"
+                    "System Settings > Privacy & Security > Accessibility > Add this app."
+                )
+                self.status_queue.put(error_message)
+                print(error_message)
+        elif os_name == "windows":
+            # For Windows, pyautogui generally works without special permissions
+            # for most tasks. However, interacting with UAC-protected windows
+            # or apps running as admin might require the script to be run as admin.
+            info_message = (
+                "INFO: On Windows, if you encounter issues controlling certain applications, "
+                "try running this script/application as an Administrator."
+            )
+            # We don't want to spam this every time, perhaps only if an error occurs later.
+            # For now, let's just print it once for awareness.
+            print(info_message)
+            # self.status_queue.put(info_message) # Optional: send to status queue
+        # No specific checks for other OSes like Linux for now
 
     def process_command(self, command: dict[str, Any]) -> bool:
         print(f"DEBUG - Received command: {command}")
@@ -143,29 +169,10 @@ class Interpreter:
             
             print(f"DEBUG - Pressing hotkey combination: {key_list}")
             
-            # Get active window info before the hotkey
-            try:
-                import Quartz
-                window_list = Quartz.CGWindowListCopyWindowInfo(
-                    Quartz.kCGWindowListOptionOnScreenOnly | Quartz.kCGWindowListExcludeDesktopElements,
-                    Quartz.kCGNullWindowID
-                )
-                
-                for window in window_list:
-                    if window.get(Quartz.kCGWindowLayer, 0) == 0:  # Active window
-                        bounds = window.get(Quartz.kCGWindowBounds)
-                        if bounds:
-                            x = int(bounds.get('X', 0))
-                            y = int(bounds.get('Y', 0))
-                            width = int(bounds.get('Width', 100))
-                            height = int(bounds.get('Height', 100))
-                            
-                            # Highlight the active window
-                            self.screen.highlight_region(x, y, width, height)
-                            break
-            except Exception as e:
-                print(f"Error getting window info: {e}")
-            
+            # The Mac-specific active window highlighting has been removed for cross-platform compatibility.
+            # If active window highlighting is desired on other platforms,
+            # it would need to be implemented using appropriate libraries (e.g., pygetwindow).
+
             # Press all keys in sequence
             for key in key_list:
                 pyautogui.keyDown(key)

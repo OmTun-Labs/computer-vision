@@ -85,7 +85,7 @@ An AI-powered computer vision control assistant that uses multiple AI models (Go
 ### Prerequisites
 
 - Python 3.8 or higher
-- MacOS (currently only supports MacOS)
+- macOS and Windows
 - API Keys:
   - Google Gemini API key (for Gemini model)
   - Groq API key (for Groq model)
@@ -123,8 +123,8 @@ python -m app.app
 ```
 
 2. Grant necessary permissions:
-   - The app will request accessibility permissions
-   - This is required for keyboard and mouse control
+   - **macOS**: The app will request Accessibility permissions. This is required for keyboard and mouse control. Please grant access in System Settings > Privacy & Security > Accessibility.
+   - **Windows**: While specific accessibility permissions are not prompted in the same way, for full control over all applications (especially those running with administrator privileges), you may need to run this application as an administrator. If you encounter issues controlling certain programs, try running as admin.
 
 3. Configure API keys:
    - Click the ⚙️ Settings button
@@ -175,7 +175,7 @@ computer-vision/
 ## 🔜 Future Enhancements
 
 1. **Cross-Platform Support**
-   - [ ] Windows support
+   - [x] Windows support
    - [ ] Linux support
 
 2. **Enhanced Visual Understanding**
