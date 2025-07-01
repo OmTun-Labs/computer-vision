@@ -85,7 +85,7 @@ An AI-powered computer vision control assistant that uses multiple AI models (Go
 ### Prerequisites
 
 - Python 3.8 or higher
-- MacOS (currently only supports MacOS)
+- MacOS or Linux
 - API Keys:
   - Google Gemini API key (for Gemini model)
   - Groq API key (for Groq model)
@@ -109,6 +109,11 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
+
+   **Note for Linux users:** `pyautogui` requires additional system packages. You may need to install them using your distribution's package manager. For example, on Debian/Ubuntu:
+   ```bash
+   sudo apt-get install scrot python3-tk python3-dev
+   ```
 
 4. Set up your API keys:
    - Get a Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
@@ -176,7 +181,7 @@ computer-vision/
 
 1. **Cross-Platform Support**
    - [ ] Windows support
-   - [ ] Linux support
+   - [x] Linux support
 
 2. **Enhanced Visual Understanding**
    - [ ] Element recognition improvements

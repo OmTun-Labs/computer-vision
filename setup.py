@@ -25,6 +25,7 @@ setup(
         "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: MIT License",
         "Operating System :: MacOS :: MacOS X",
+        "Operating System :: POSIX :: Linux",
     ],
     python_requires=">=3.8",
     install_requires=requirements,
